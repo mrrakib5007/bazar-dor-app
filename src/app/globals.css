@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --font-sans: var(--font-anek-bangla), sans-serif;
+  --color-primary: var(--primary);
+}
+
+:root {
+  --primary: #1FA646;
+}
