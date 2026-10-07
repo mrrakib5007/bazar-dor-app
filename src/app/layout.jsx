@@ -1,6 +1,7 @@
 import { Anek_Bangla } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Shared/Navbar";
+import PriceMarquee from "@/components/Shared/PriceMarquee";
 
 const anekBangla = Anek_Bangla({
   subsets: ["bengali", "latin"],
@@ -18,8 +19,9 @@ export default function RootLayout({ children }) {
       lang="bn"
       className={`${anekBangla.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col font-sans bg-gray-100">
         <Navbar />
+        <PriceMarquee />
         <main className="flex-1">{children}</main>
       </body>
     </html>
