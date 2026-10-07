@@ -1,5 +1,6 @@
 import { Anek_Bangla } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
 
 const anekBangla = Anek_Bangla({
   subsets: ["bengali", "latin"],
@@ -8,7 +9,7 @@ const anekBangla = Anek_Bangla({
 
 export const metadata = {
   title: "বাজার দর - আজকের বাজারের দাম",
-  description: "আজকের নিত্যপ্রয়োজনীয় পণ্যের সঠিক বাজার দর ও সর্বশেষ আপডেট জানুন।",
+  description: "আজকের নিত্যপ্রয়োজনীয় পণ্যের সঠিক বাজার দর ও সর্বশেষ আপডেট জানুন।",
 };
 
 export default function RootLayout({ children }) {
@@ -18,7 +19,8 @@ export default function RootLayout({ children }) {
       className={`${anekBangla.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        {children}
+        <Navbar />
+        <main className="flex-1">{children}</main>
       </body>
     </html>
   );
