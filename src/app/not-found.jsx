@@ -5,7 +5,7 @@ import { TbError404 } from "react-icons/tb";
 
 export default function NotFound() {
   return (
-    <div className="w-full min-h-[calc(100vh-280px)] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16 bg-white">
+    <div className="max-w-7xl mx-auto min-h-[calc(100vh-280px)] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16 bg-white mt-5 rounded-xl">
       <div className="max-w-md w-full text-center bg-white border border-slate-100 rounded-3xl p-8 sm:p-10 shadow-xs">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-slate-50 text-slate-500 mb-6 border border-slate-100 shadow-2xs">
           <TbError404 className="w-12 h-12" />

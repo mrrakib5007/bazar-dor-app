@@ -16,6 +16,25 @@ async function getCategoryProducts(id) {
   }
 }
 
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  const products = await getCategoryProducts(resolvedParams.id);
+
+  const categoryName = products[0]?.categoryNameBn;
+
+  if (!categoryName) {
+    return {
+      title: "ক্যাটাগরি | বাজার দর",
+      description: "দৈনন্দিন নিত্যপ্রয়োজনীয় পণ্যের বাজার দাম",
+    };
+  }
+
+  return {
+    title: `${categoryName} এর আজকের বাজার দাম | বাজার দর`,
+    description: `${categoryName} ক্যাটাগরির সকল পণ্যের আজকের দাম ও পরিবর্তনের তালিকা দেখুন।`,
+  };
+}
+
 export default async function CategoryDetailsPage({ params }) {
   const resolvedParams = await params;
   const products = await getCategoryProducts(resolvedParams.id);
