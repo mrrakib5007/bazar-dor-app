@@ -1,224 +1,182 @@
 "use client";
 
-import React, { useEffect, useState, useSyncExternalStore } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { HiMenuAlt3, HiX } from "react-icons/hi";
+import { HiMenu, HiX } from "react-icons/hi";
 
-const subscribe = () => () => {};
-
-const getBanglaDate = () => {
-  return new Intl.DateTimeFormat("bn-BD", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Dhaka",
-  }).format(new Date());
+const toBanglaDigits = (str) => {
+  const banglaNumbers = {
+    "0": "০", "1": "১", "2": "২", "3": "৩", "4": "৪",
+    "5": "৫", "6": "৬", "7": "৭", "8": "৮", "9": "৯"
+  };
+  return String(str).replace(/[0-9]/g, (match) => banglaNumbers[match] || match);
 };
 
-const CategoryNav = ({ categories }) => {
-  const pathname = usePathname();
-
-  return (
-    <nav className="flex items-center gap-2 sm:gap-4 overflow-x-auto py-2.5 no-scrollbar">
-      {categories.map((cat) => {
-        const targetPath = `/category/${cat.slug}`;
-        const isActive =
-          pathname === targetPath || (pathname === "/" && cat.slug === "chal");
-
-        return (
-          <Link
-            key={cat.id}
-            href={targetPath}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all shrink-0 cursor-pointer ${
-              isActive
-                ? "bg-(--primary) text-white shadow-sm font-semibold"
-                : "text-base-content/70 hover:text-base-content hover:bg-base-200/60"
-            }`}
-          >
-            <span className="text-base leading-none">{cat.icon}</span>
-            <span>{cat.nameBn}</span>
-          </Link>
-        );
-      })}
-    </nav>
-  );
-};
-
-const Navbar = () => {
-  const [categories, setCategories] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [prevPathname, setPrevPathname] = useState("");
-  const pathname = usePathname();
-
-  const currentDate = useSyncExternalStore(
-    subscribe,
-    getBanglaDate,
-    () => ""
-  );
-
-  if (pathname !== prevPathname) {
-    setPrevPathname(pathname);
-    setIsOpen(false);
-  }
+export default function Navbar({ navLinks, mobileNavLinks }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState("");
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch(
-          "https://api.api-store.workers.dev/api/bazardor/categories"
-        );
-        const data = await res.json();
-        setCategories(data);
-      } catch (error) {
-        setCategories([
-          { id: "chal", slug: "chal", nameBn: "চাল", icon: "🍚" },
-        ]);
-      }
+    const updateDate = () => {
+      const now = new Date();
+      const banglaDays = [
+        "রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"
+      ];
+      const banglaMonths = [
+        "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+        "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"
+      ];
+
+      const day = banglaDays[now.getDay()];
+      const dateNum = toBanglaDigits(now.getDate());
+      const month = banglaMonths[now.getMonth()];
+      const year = toBanglaDigits(now.getFullYear());
+      setCurrentDate(`${day}, ${dateNum} ${month}, ${year}`);
     };
 
-    fetchCategories();
+    updateDate();
   }, []);
 
-  return (
-    <>
-      <header className="w-full bg-base-100 border-b border-base-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center gap-3">
-              <Link href="/" className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-(--primary) flex items-center justify-center p-2.5 shadow-sm">
-                  <Image
-                    src="/logo-icon.png"
-                    alt="বাজার দর লোগো"
-                    width={32}
-                    height={32}
-                    className="w-full h-full object-contain brightness-0 invert"
-                    priority
-                  />
-                </div>
-                <div>
-                  <span className="text-xl sm:text-2xl font-bold tracking-tight text-base-content block">
-                    বাজার দর
-                  </span>
-                  <p className="text-xs text-base-content/60 font-medium min-h-4">
-                    {currentDate}
-                  </p>
-                </div>
-              </Link>
-            </div>
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
-            <div className="hidden md:flex items-center gap-3">
-              <Link href="/login" className="btn btn-ghost text-base font-semibold text-base-content hover:bg-base-200">
+  return (
+    <header className="sticky top-0 z-40 w-full bg-white border-b border-slate-100 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between py-4 sm:py-5">
+          <Link href="/" className="flex items-center gap-3 select-none">
+            <div className="relative w-12 h-12 rounded-2xl bg-(--primary) flex items-center justify-center p-2.5 shadow-xs shrink-0">
+              <Image
+                src="/logo-icon.png"
+                alt="বাজার দর লোগো"
+                width={30}
+                height={30}
+                className="w-full h-full object-contain brightness-0 invert"
+                priority
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none mb-1">
+                বাজার দর
+              </span>
+              <span className="text-xs text-slate-400 font-medium tracking-normal min-h-4">
+                {currentDate}
+              </span>
+            </div>
+          </Link>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-3">
+              <Link
+                href="/login"
+                className="px-4 py-2 text-sm font-bold text-slate-800 hover:text-slate-950 transition-colors"
+              >
                 সাইন ইন
               </Link>
-              <Link href="/register" className="btn bg-(--primary) hover:opacity-90 text-white border-none rounded-xl text-base px-5 shadow-sm">
+              <Link
+                href="/register"
+                className="px-5 py-2.5 text-sm font-bold text-white bg-(--primary) hover:opacity-90 rounded-xl transition-all shadow-xs"
+              >
                 সাইন আপ
               </Link>
             </div>
 
-            <div className="flex md:hidden items-center">
-              <button
-                onClick={() => setIsOpen(true)}
-                className="btn btn-ghost btn-circle text-base-content"
-                aria-label="মেনু খুলুন"
-              >
-                <HiMenuAlt3 className="w-7 h-7" />
-              </button>
-            </div>
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden p-2 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
+              aria-label="Open Navigation Menu"
+            >
+              <HiMenu className="w-6 h-6" />
+            </button>
           </div>
         </div>
+      </div>
 
-        <div className="hidden md:block border-t border-base-200/80 bg-base-100/50 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <CategoryNav categories={categories} />
-          </div>
+      <div className="hidden md:block border-t border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-2.5 no-scrollbar min-h-11">
+            <Suspense fallback={null}>
+              {navLinks}
+            </Suspense>
+          </nav>
         </div>
-      </header>
+      </div>
 
       <div
-        onClick={() => setIsOpen(false)}
-        className={`fixed inset-0 bg-black/40 backdrop-blur-xs z-50 transition-opacity duration-300 md:hidden ${
-          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        onClick={() => setMobileMenuOpen(false)}
+        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-xs transition-opacity duration-300 md:hidden ${
+          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       />
 
-      <aside
-        className={`fixed top-0 right-0 h-full w-70 max-w-[85vw] bg-base-100 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden flex flex-col justify-between ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+      <div
+        className={`fixed top-0 right-0 z-50 h-full w-72 max-w-[85vw] bg-white border-l border-slate-100 shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-in-out md:hidden ${
+          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="p-5 flex flex-col h-full overflow-hidden">
-          <div className="flex items-center justify-between pb-4 border-b border-base-200">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-(--primary) flex items-center justify-center p-2 shadow-sm">
-                <Image
-                  src="/logo-icon.png"
-                  alt="বাজার দর লোগো"
-                  width={24}
-                  height={24}
-                  className="w-full h-full object-contain brightness-0 invert"
-                />
-              </div>
-              <div>
-                <span className="font-bold text-lg text-base-content block leading-tight">
-                  বাজার দর
-                </span>
-                <span className="text-[11px] text-base-content/60">
-                  দৈনিক পণ্যমূল্য
-                </span>
-              </div>
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+          <Link
+            href="/"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2.5 select-none"
+          >
+            <div className="w-8 h-8 rounded-xl bg-(--primary) flex items-center justify-center p-1.5 shrink-0">
+              <Image
+                src="/logo-icon.png"
+                alt="বাজার দর লোগো"
+                width={20}
+                height={20}
+                className="w-full h-full object-contain brightness-0 invert"
+              />
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="btn btn-sm btn-circle btn-ghost text-base-content"
-              aria-label="মেনু বন্ধ করুন"
-            >
-              <HiX className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto py-4 space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-wider text-base-content/40 px-3 mb-2">
-              ক্যাটাগরি সমূহ
-            </p>
-            {categories.map((cat) => {
-              const targetPath = `/category/${cat.slug}`;
-              const isActive =
-                pathname === targetPath || (pathname === "/" && cat.slug === "chal");
-
-              return (
-                <Link
-                  key={cat.id}
-                  href={targetPath}
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    isActive
-                      ? "bg-(--primary) text-white font-semibold shadow-xs"
-                      : "text-base-content/80 hover:bg-base-200"
-                  }`}
-                >
-                  <span className="text-lg leading-none">{cat.icon}</span>
-                  <span>{cat.nameBn}</span>
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="pt-4 border-t border-base-200 space-y-2 shrink-0">
-            <Link href="/login" className="btn btn-outline border-base-300 w-full rounded-xl text-base-content font-medium">
-              সাইন ইন
-            </Link>
-            <Link href="/register" className="btn bg-(--primary) hover:opacity-90 text-white border-none w-full rounded-xl font-medium shadow-xs">
-              সাইন আপ
-            </Link>
-          </div>
+            <span className="text-lg font-black text-slate-900 tracking-tight">
+              বাজার দর
+            </span>
+          </Link>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg transition-colors"
+            aria-label="Close Navigation Menu"
+          >
+            <HiX className="w-5 h-5" />
+          </button>
         </div>
-      </aside>
-    </>
-  );
-};
 
-export default Navbar;
+        <div
+          className="flex-1 overflow-y-auto p-4 space-y-1"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <Suspense fallback={null}>
+            {mobileNavLinks}
+          </Suspense>
+        </div>
+
+        <div className="p-4 border-t border-slate-100 space-y-2 bg-slate-50/50">
+          <Link
+            href="/login"
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full py-2.5 text-center text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-xl block transition-all"
+          >
+            সাইন ইন
+          </Link>
+          <Link
+            href="/register"
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full py-2.5 text-center text-sm font-bold text-white bg-(--primary) hover:opacity-90 rounded-xl block transition-all shadow-xs"
+          >
+            সাইন আপ
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}
