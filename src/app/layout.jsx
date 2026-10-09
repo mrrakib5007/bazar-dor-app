@@ -18,8 +18,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html
-      lang="bn"
-      className={`${anekBangla.variable} h-full antialiased`}
+      lang="bn" data-theme="light" style={{ colorScheme: "light" }}
+      className={`${anekBangla.variable} light h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-gray-100">
         <Navbar

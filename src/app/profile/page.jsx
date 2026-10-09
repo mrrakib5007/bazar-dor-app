@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import { HiOutlineArrowRightOnRectangle } from "react-icons/hi2";
 import { authClient } from "@/lib/auth-client";
+import Loading from "./loading";
 
 function ProfileEditForm({ user }) {
   const router = useRouter();
@@ -35,7 +36,7 @@ function ProfileEditForm({ user }) {
     setIsUpdating(true);
 
     try {
-      const { data, error } = await authClient.updateUser({
+      const { error } = await authClient.updateUser({
         name: trimmedName,
       });
 
@@ -97,12 +98,6 @@ export default function ProfilePage() {
 
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  useEffect(() => {
-    if (!isPending && !user) {
-      router.push("/signin?callbackUrl=/profile");
-    }
-  }, [user, isPending, router]);
-
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
@@ -122,21 +117,8 @@ export default function ProfilePage() {
     }
   };
 
-  if (isPending) {
-    return (
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-pulse space-y-6">
-        <div className="space-y-2">
-          <div className="w-44 h-8 bg-slate-200/60 rounded-xl" />
-          <div className="w-64 h-4 bg-slate-200/60 rounded-lg" />
-        </div>
-        <div className="w-full h-32 bg-white rounded-3xl border border-slate-100 shadow-xs" />
-        <div className="w-full h-56 bg-white rounded-3xl border border-slate-100 shadow-xs" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
+  if (isPending || !user) {
+    return <Loading />;
   }
 
   return (

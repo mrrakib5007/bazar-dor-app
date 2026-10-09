@@ -132,7 +132,7 @@ export default function SignUpPage() {
         </p>
       </div>
 
-      <div className="w-full max-w-md bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-xs">
+      <div className="w-full max-w-125 bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-xs">
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
@@ -143,7 +143,7 @@ export default function SignUpPage() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="যেমন: রহিম উদ্দিন"
+              placeholder="আপনার নাম লিখুন"
               className={`w-full px-4 py-2.5 rounded-xl border text-sm text-slate-800 placeholder:text-slate-400 focus:outline-hidden transition-all bg-white ${
                 errors.name
                   ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
@@ -190,7 +190,7 @@ export default function SignUpPage() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="কমপক্ষে ৮ অক্ষর"
+                placeholder="কমপক্ষে ৬ অক্ষর"
                 className={`w-full pl-4 pr-11 py-2.5 rounded-xl border text-sm text-slate-800 placeholder:text-slate-400 focus:outline-hidden transition-all bg-white ${
                   errors.password
                     ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
