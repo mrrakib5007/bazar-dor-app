@@ -105,8 +105,7 @@ export default function ProfilePage() {
       toast.success("লগআউট সম্পন্ন হয়েছে!", {
         position: "top-center",
         duration: 2500,
-      });
-      router.push("/signin");
+      });      
       router.refresh();
     } catch (err) {
       toast.error("লগআউট করতে সমস্যা হয়েছে!", {
